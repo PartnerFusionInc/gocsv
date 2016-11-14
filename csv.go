@@ -161,6 +161,12 @@ func UnmarshalCSV(in CSVReader, out interface{}) error {
 	return readTo(csvDecoder{in}, out)
 }
 
+// UnmarshalCSVToChan parses the CSV from the reader in the interface and sends each value in the chan c.
+// The channel must have a concrete type.
+func UnmarshalCSVToChan(in CSVReader, c interface{}) error {
+	return readEach(csvDecoder{in}, c)
+}
+
 // UnmarshalToChan parses the CSV from the reader and send each value in the chan c.
 // The channel must have a concrete type.
 func UnmarshalToChan(in io.Reader, c interface{}) (err error) {

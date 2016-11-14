@@ -11,7 +11,7 @@ API and techniques inspired from https://godoc.org/gopkg.in/mgo.v2
 Installation
 =====
 
-```go get -u github.com/gocarina/gocsv```
+```go get -u github.com/PartnerFusionInc/gocsv```
 
 Full example
 =====
@@ -118,34 +118,3 @@ type Client struct { // Our example struct with a custom type (DateTime)
 
 ```
 
-Customizable CSV Reader / Writer
----
-
-```go
-
-func main() {
-	...
-	
-	gocsv.SetCSVReader(func(in io.Reader) *csv.Reader {
-    	//return csv.NewReader(in)
-    	return gocsv.LazyCSVReader(in) // Allows use of quotes in CSV
-    })
-
-    ...
-
-    gocsv.UnmarshalFile(file, &clients)
-
-    ...
-
-    gocsv.SetCSVWriter(func(out io.Writer) *csv.Writer {
-    	return csv.NewWriter(out)
-    })
-
-    ...
-
-    gocsv.MarshalFile(&clients, file)
-
-	...
-}
-
-```
