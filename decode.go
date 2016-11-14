@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"strings"
 )
 
 // Decoder .
@@ -167,6 +168,10 @@ func readEach(decoder SimpleDecoder, c interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	// remove BOM from headers if it is present
+	headers[0] = strings.TrimPrefix(headers[0], "\xef\xbb\xbf")
+
 	outValue, outType := getConcreteReflectValueAndType(c) // Get the concrete type (not pointer) (Slice<?> or Array<?>)
 	if err := ensureOutType(outType); err != nil {
 		return err
