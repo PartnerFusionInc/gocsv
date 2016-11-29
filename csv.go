@@ -163,25 +163,25 @@ func UnmarshalCSV(in CSVReader, out interface{}) error {
 
 // UnmarshalCSVToChan parses the CSV from the reader in the interface and sends each value in the chan c.
 // The channel must have a concrete type.
-func UnmarshalCSVToChan(in CSVReader, c interface{}) error {
+func UnmarshalCSVToChan(in CSVReader, c interface{}) []error {
 	return readEach(csvDecoder{in}, c)
 }
 
 // UnmarshalToChan parses the CSV from the reader and send each value in the chan c.
 // The channel must have a concrete type.
-func UnmarshalToChan(in io.Reader, c interface{}) (err error) {
+func UnmarshalToChan(in io.Reader, c interface{}) []error {
 	return readEach(newDecoder(in), c)
 }
 
 // UnmarshalStringToChan parses the CSV from the string and send each value in the chan c.
 // The channel must have a concrete type.
-func UnmarshalStringToChan(in string, c interface{}) (err error) {
+func UnmarshalStringToChan(in string, c interface{}) []error {
 	return UnmarshalToChan(strings.NewReader(in), c)
 }
 
 // UnmarshalBytesToChan parses the CSV from the bytes and send each value in the chan c.
 // The channel must have a concrete type.
-func UnmarshalBytesToChan(in []byte, c interface{}) (err error) {
+func UnmarshalBytesToChan(in []byte, c interface{}) []error {
 	return UnmarshalToChan(bytes.NewReader(in), c)
 }
 
@@ -195,7 +195,10 @@ func UnmarshalToCallback(in io.Reader, f interface{}) (err error) {
 	}
 	c := reflect.MakeChan(reflect.ChanOf(reflect.BothDir, t.In(0)), 0)
 	go func() {
-		err = UnmarshalToChan(in, c.Interface())
+		errs := UnmarshalToChan(in, c.Interface())
+		if len(errs) > 0 {
+			err = errs[0] // just pluck out the first error if there was one
+		}
 	}()
 	for {
 		if err != nil {
